@@ -17,9 +17,9 @@ TAB_UI <- function(id) {
     
     list(
         textOutput(ns("output_area")), 
-        fileInput("file1", "Choose .csv species report",
+        fileInput("file1", "Choose .tabular report from Galaxy version of Kraken2",
                   multiple = FALSE,
-                  accept = ".csv")
+                  accept = ".tabular")
     )
 }
 
@@ -42,7 +42,12 @@ ui <- fluidPage(
             
             # Input: Select a file ----
             TAB_UI("file1"),
-            actionButton("pvButton", "Preview Kraken file"),
+            # Horizontal line, provides spacing
+            tags$hr(),
+            actionButton("pvButton2", "View Species Only Dataframe"),
+            # Horizontal line, provides spacing
+            tags$hr(),
+            actionButton("calcButton", "Calculate Shannon Diversity"),
             # Horizontal line, provides spacing
             tags$hr(),
         ),
@@ -62,7 +67,7 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-    
+
     output$contents <- renderTable({
         
         # input$file1 will be NULL initially. After the user selects
@@ -70,26 +75,34 @@ server <- function(input, output) {
         # or all rows if selected, will be shown.
         
         req(input$file1)
-        req(input$pvButton)
+        req(input$pvButton2)
         
         # when reading semicolon separated files,
         # having a comma separator causes `read.csv` to error
         tryCatch(
             {
-                df <- read.csv(input$file1$datapath)
+                df <- read.table(input$file1$datapath,sep="\t", header=FALSE)
+                names(df)<-c('Classification','Count')
             },
             error = function(e) {
                 # return a safeError if a parsing error occurs
                 stop(safeError(e))
             }
         )
-        #return(head(df))
-        return(df)
+        #Create dataframe with just species rows using logical/grepl filter
+        sRows <- df[grepl("\\|s", df[["Classification"]]),]
+        
+        #Use for loop with gsub to simplify Species name
+        for (i in 1:nrow(sRows)){
+            sRows[i,1]<-gsub("d__.*s__","",sRows[i,1],perl=TRUE)
+        }
+        
+        #Format column names and write file
+        names(sRows) <- c('Species','Count')
+        
+        return(sRows)
     })
-    
-    output$table <- renderTable({
-        datasetInput()
-    })
+
     
     output$value <- renderText({
         
@@ -98,12 +111,14 @@ server <- function(input, output) {
         # or all rows if selected, will be shown.
         
         req(input$file1)
+        req(input$calcButton)
         
         # when reading semicolon separated files,
         # having a comma separator causes `read.csv` to error
         tryCatch(
             {
-                df <- read.csv(input$file1$datapath)
+                df <- read.table(input$file1$datapath,sep="\t", header=FALSE)
+                names(df)<-c('Classification','Count')
             },
             error = function(e) {
                 # return a safeError if a parsing error occurs
@@ -111,23 +126,10 @@ server <- function(input, output) {
             }
         )
         
-        # myS <- nrow(df)
-        # myTotal <- sum(df$Count)
-        # myP <- df$Count/myTotal 
-        # myNewColumn = myP*log(myP)
-        # SDI <- -1*sum(myNewColumn)
-        # Hmax <- -myTotal*(1/myTotal)*log(1/myTotal)
-        # SE <- SDI/log(myS)
-        # 
-        # myString <- paste("Shannon Diversity Index:",format(SDI,digits = 2, nsmall = 3)," Evenness:",format(SE,digits = 2, nsmall = 3))
-        # 
-        # return(myString)
-        # 
+        sRows <- df[grepl("\\|s", df[["Classification"]]),]
         
         myS <- nrow(df)
-        
         myTotal <- sum(df$Count)
-        
         myP <- df$Count/myTotal 
         
         myNewColumn = myP*log(myP)

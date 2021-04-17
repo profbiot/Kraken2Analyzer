@@ -5,8 +5,9 @@ account: ecbio340
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3670799
-bundleId: 4353277
+bundleId: 4484343
 url: https://ecbio340.shinyapps.io/ShannonDiversityKraken2/
-when: 1615905560.01315
+when: 1618682186.30247
 asMultiple: FALSE
 asStatic: FALSE
+ignoredFiles: ChildSpecies.csv|ChildSpecies.tabular|Galaxy41-[Report__Kraken2_on_data_36] (1).tabular|LICENSE|README.md
