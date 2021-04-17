@@ -1,0 +1,22 @@
+h1 {
+  font-family: merriweather, serif;
+  font-weight: 500;
+  line-height: 1.1;
+  color: #fff;
+}
+
+
+h4 {
+  font-family: merriweather, serif;
+  font-style: normal;
+  font-weight: 300;
+  color: #fff;
+}
+
+body {
+  background-color: #036;
+}
+
+table{
+  background-color: #fff;
+}

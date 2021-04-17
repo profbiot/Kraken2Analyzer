@@ -1,0 +1,12 @@
+name: ShannonDiversityKraken2
+title: ShannonDiversityKraken2
+username:
+account: ecbio340
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3670799
+bundleId: 4353277
+url: https://ecbio340.shinyapps.io/ShannonDiversityKraken2/
+when: 1615905560.01315
+asMultiple: FALSE
+asStatic: FALSE
